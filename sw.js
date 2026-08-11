@@ -1,10 +1,13 @@
-const CACHE = 'wallet-v1';
+const CACHE = 'wallet-v2';
 const ASSETS = [
   './',
   './index.html',
   './style.css',
   './app.js',
-  './manifest.json'
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png',
+  './apple-touch-icon.png'
 ];
 
 self.addEventListener('install', (e) => {

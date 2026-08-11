@@ -426,14 +426,35 @@
   document.getElementById('btn-add-expected').addEventListener('click', () => openExpectedModal());
   document.getElementById('btn-add-tx').addEventListener('click', openTxModal);
 
-  // Cash
-  document.getElementById('btn-cash-apply').addEventListener('click', () => {
-    const delta = parseFloat(document.getElementById('cash-delta').value);
-    if (isNaN(delta) || delta === 0) return;
+  // Cash + / -
+  let cashMode = null; // 'plus' | 'minus'
+
+  function openCashModal(mode) {
+    cashMode = mode;
+    document.getElementById('cash-modal-title').textContent = mode === 'plus' ? 'Положить наличку' : 'Снять наличку';
+    document.getElementById('cash-modal-amount').value = '';
+    document.getElementById('cash-modal-note').value = '';
+    document.getElementById('cash-modal').classList.remove('hidden');
+    setTimeout(() => document.getElementById('cash-modal-amount').focus(), 100);
+  }
+
+  document.getElementById('btn-cash-plus').addEventListener('click', () => openCashModal('plus'));
+  document.getElementById('btn-cash-minus').addEventListener('click', () => openCashModal('minus'));
+  document.getElementById('cash-modal-close').addEventListener('click', () => {
+    document.getElementById('cash-modal').classList.add('hidden');
+  });
+  document.getElementById('cash-modal-cancel').addEventListener('click', () => {
+    document.getElementById('cash-modal').classList.add('hidden');
+  });
+  document.getElementById('cash-modal-save').addEventListener('click', () => {
+    const amount = parseFloat(document.getElementById('cash-modal-amount').value);
+    if (isNaN(amount) || amount <= 0) return alert('Укажи сумму');
+    const note = document.getElementById('cash-modal-note').value.trim() || (cashMode === 'plus' ? 'Пополнение' : 'Снятие');
+    const delta = cashMode === 'plus' ? amount : -amount;
     data.cash = (data.cash || 0) + delta;
     data.cashHistory = data.cashHistory || [];
-    data.cashHistory.push({ date: new Date().toISOString().slice(0,10), delta, note: delta > 0 ? 'Пополнение' : 'Снятие' });
-    document.getElementById('cash-delta').value = '';
+    data.cashHistory.push({ date: new Date().toISOString().slice(0,10), delta, note });
+    document.getElementById('cash-modal').classList.add('hidden');
     save();
   });
 
