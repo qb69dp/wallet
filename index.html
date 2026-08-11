@@ -6,60 +6,42 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#050505" />
-  <meta name="description" content="Универсальный кошелёк: кармашки, долги, категории, прогноз" />
+  <meta name="description" content="Кармашек — учёт денег, долгов и кармашков" />
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-  <title>Мой кошелёк</title>
+  <title>Кармашек</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div id="app">
     <header class="header">
-      <h1 id="header-title">Мой кошелёк</h1>
+      <h1 id="header-title">Кармашек</h1>
       <div class="header-actions">
-        <button id="btn-search" class="icon-btn" title="Поиск" aria-label="Поиск">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-        </button>
         <button id="btn-theme" class="icon-btn" title="Тема" aria-label="Тема">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-        </button>
-        <button id="btn-settings" class="icon-btn" title="Настройки" aria-label="Настройки">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
         </button>
       </div>
     </header>
 
-    <div id="search-bar" class="search-bar hidden">
-      <input type="search" id="search-input" placeholder="Поиск по долгам, транзакциям..." />
-      <button id="search-close" class="icon-btn">✕</button>
-    </div>
-
+    <!-- Dashboard -->
     <section id="dashboard" class="section active">
       <div class="balance-box">
-        <div class="balance-label">Всего доступно</div>
-        <div class="balance-value" id="dash-total">0</div>
-        <div class="balance-sub" id="dash-currency-label">€ · кармашки − я должен + мне должны</div>
+        <div class="balance-label">Всего в кармашках</div>
+        <div id="dash-totals" class="balance-totals"></div>
       </div>
 
-      <div class="cards three">
-        <div class="card card-pockets">
-          <div class="card-label">Кармашки</div>
-          <div class="card-value" id="dash-pockets">0</div>
-        </div>
+      <div class="cards two">
         <div class="card card-owed">
           <div class="card-label">Мне должны</div>
-          <div class="card-value" id="dash-owed">0</div>
+          <div class="card-value" id="dash-owed">—</div>
         </div>
         <div class="card card-owe">
           <div class="card-label">Я должен</div>
-          <div class="card-value" id="dash-owe">0</div>
+          <div class="card-value" id="dash-owe">—</div>
         </div>
       </div>
 
-      <div class="forecast-box">
-        <div class="forecast-label">Прогноз на 30 дней</div>
-        <div class="forecast-value" id="dash-forecast">—</div>
-      </div>
+      <div id="goals-home" class="goals-home hidden"></div>
 
       <h2 class="section-title">Кармашки</h2>
       <div id="pockets-preview" class="pockets-grid"></div>
@@ -69,11 +51,7 @@
       <div id="upcoming-list" class="list"></div>
     </section>
 
-    <section id="pockets" class="section">
-      <button class="btn btn-add" id="btn-add-pocket">+ Новый кармашек</button>
-      <div id="list-pockets" class="list"></div>
-    </section>
-
+    <!-- Debts -->
     <section id="debts" class="section">
       <div class="debts-summary">
         <div class="debt-side owed">
@@ -100,50 +78,53 @@
       </div>
     </section>
 
-    <section id="transactions" class="section">
-      <button class="btn btn-add" id="btn-add-tx">+ Доход / Расход</button>
-      <div class="filter-row">
-        <select id="tx-filter-type">
-          <option value="all">Все</option>
-          <option value="expense">Расходы</option>
-          <option value="income">Доходы</option>
-        </select>
-        <select id="tx-filter-pocket">
-          <option value="all">Все кармашки</option>
-        </select>
-      </div>
-      <div id="list-tx" class="list"></div>
-    </section>
-
+    <!-- Stats = History + Statistics -->
     <section id="stats" class="section">
-      <h2 class="section-title">По категориям (расходы)</h2>
-      <div id="stats-categories" class="stats-list"></div>
-      <h2 class="section-title">По кармашкам</h2>
-      <div id="stats-pockets" class="stats-list"></div>
-      <p class="hint" style="margin-top:16px">Круговая диаграмма появится в следующем обновлении.</p>
+      <div class="tabs">
+        <button class="tab active" data-stat-tab="history">История</button>
+        <button class="tab" data-stat-tab="charts">Статистика</button>
+      </div>
+      <div id="stat-history" class="tab-content active">
+        <div class="filter-row">
+          <select id="tx-filter-type">
+            <option value="all">Все</option>
+            <option value="expense">Расходы</option>
+            <option value="income">Доходы</option>
+          </select>
+          <select id="tx-filter-pocket">
+            <option value="all">Все кармашки</option>
+          </select>
+        </div>
+        <div id="list-tx" class="list"></div>
+      </div>
+      <div id="stat-charts" class="tab-content">
+        <div class="period-tabs">
+          <button class="period-btn active" data-period="week">Неделя</button>
+          <button class="period-btn" data-period="month">Месяц</button>
+          <button class="period-btn" data-period="year">Год</button>
+        </div>
+        <div class="chart-summary" id="chart-summary"></div>
+        <h2 class="section-title">По категориям</h2>
+        <div id="pie-categories" class="pie-wrap"></div>
+        <div id="stats-categories" class="stats-list"></div>
+        <h2 class="section-title">По кармашкам</h2>
+        <div id="stats-pockets" class="stats-list"></div>
+      </div>
     </section>
 
-    <section id="settings" class="section">
-      <h2 class="section-title">Основные</h2>
-      <div class="settings-row">
-        <span>Валюта</span>
-        <select id="setting-currency">
-          <option value="€">€ Евро</option>
-          <option value="Kč">Kč Крона</option>
-          <option value="$">$ Доллар</option>
-          <option value="£">£ Фунт</option>
-          <option value="zł">zł Злотый</option>
-          <option value="Ft">Ft Форинт</option>
-        </select>
+    <!-- More -->
+    <section id="more" class="section">
+      <div class="profile-card">
+        <div class="profile-avatar" id="profile-avatar">К</div>
+        <div class="profile-info">
+          <div class="profile-name" id="profile-name">Без имени</div>
+          <button class="link-btn" id="btn-edit-profile">Изменить имя</button>
+        </div>
       </div>
-      <div class="settings-row">
-        <span>Тема</span>
-        <select id="setting-theme">
-          <option value="dark">Тёмная</option>
-          <option value="light">Светлая</option>
-          <option value="system">Как в системе</option>
-        </select>
-      </div>
+
+      <h2 class="section-title">Кармашки</h2>
+      <div id="list-pockets" class="list"></div>
+      <button class="btn btn-add" id="btn-add-pocket">+ Новый кармашек</button>
 
       <h2 class="section-title">Категории</h2>
       <div id="list-categories" class="list compact"></div>
@@ -153,42 +134,51 @@
       <div id="list-goals" class="list compact"></div>
       <button class="btn btn-add" id="btn-add-goal">+ Цель</button>
 
+      <h2 class="section-title">Настройки</h2>
+      <div class="settings-row">
+        <span>Тема</span>
+        <select id="setting-theme">
+          <option value="dark">Тёмная</option>
+          <option value="light">Светлая</option>
+          <option value="system">Как в системе</option>
+        </select>
+      </div>
+
       <h2 class="section-title">Данные</h2>
       <div class="form-group">
-        <label>Импорт CSV (дата;описание;сумма)</label>
+        <label>Импорт CSV / выписки</label>
         <input type="file" id="csv-file" accept=".csv,text/csv" />
       </div>
       <button class="btn btn-secondary full" id="btn-export">Экспорт JSON</button>
       <button class="btn btn-danger" id="btn-clear">Очистить всё</button>
-      <p class="hint" style="margin-top:20px">Данные только на устройстве. Уведомления пока внутри приложения.</p>
+      <p class="hint" style="margin-top:16px">Данные хранятся только на устройстве.</p>
     </section>
 
-    <button id="fab" class="fab" title="Добавить">+</button>
-
+    <!-- Bottom nav -->
     <nav class="bottom-nav">
       <button class="nav-btn active" data-section="dashboard">
         <svg class="nav-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
         <span>Главная</span>
       </button>
-      <button class="nav-btn" data-section="pockets">
-        <svg class="nav-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/></svg>
-        <span>Кармашки</span>
-      </button>
       <button class="nav-btn" data-section="debts">
         <svg class="nav-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
         <span>Долги</span>
       </button>
-      <button class="nav-btn" data-section="transactions">
-        <svg class="nav-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
-        <span>История</span>
+      <button class="nav-btn nav-fab" id="nav-fab" title="Добавить">
+        <span class="fab-circle">+</span>
       </button>
       <button class="nav-btn" data-section="stats">
         <svg class="nav-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
         <span>Стат</span>
       </button>
+      <button class="nav-btn" data-section="more">
+        <svg class="nav-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <span>Ещё</span>
+      </button>
     </nav>
   </div>
 
+  <!-- Modal -->
   <div id="modal" class="modal hidden">
     <div class="modal-content">
       <div class="modal-header">
@@ -205,6 +195,7 @@
     </div>
   </div>
 
+  <!-- Action sheet -->
   <div id="fab-sheet" class="sheet hidden">
     <div class="sheet-backdrop" id="fab-backdrop"></div>
     <div class="sheet-content">
